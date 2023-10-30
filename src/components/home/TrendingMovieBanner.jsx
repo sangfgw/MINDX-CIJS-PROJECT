@@ -15,6 +15,7 @@ import {
 import { useReducer } from "react";
 import { initializeMovieState, movieReducer } from "../../utils/movie-reducer";
 import { generateRandomTrailerVideoId } from "../../utils/generate/randomVideoId";
+import { Link } from "react-router-dom";
 
 // const TrendingMovieWrapper = styled(Box)(() => ({
 //   marginBottom: "1rem" /* 16px */,
@@ -155,15 +156,15 @@ const TrendingMovieBanner = ({ movie }) => {
           <StyledTitleTrending>{movie.title}</StyledTitleTrending>
           <StyledDescTrending>{movie.overview}</StyledDescTrending>
 
-          <StyledWatchButton
-            variant="contained"
-            size="large"
-            href={`/${
-              state.genres.find((genre) => genre.id === movie.genre_ids[0])
-                ?.name
-            }/${movie.id}`}
-          >
-            Watch Now!
+          <StyledWatchButton variant="contained" size="large">
+            <Link
+              to={`/${
+                state.genres.find((genre) => genre.id === movie.genre_ids[0])
+                  ?.name
+              }/${movie.id}`}
+            >
+              Watch Now!
+            </Link>
           </StyledWatchButton>
         </MovieContent>
         <VideoWrapper>
