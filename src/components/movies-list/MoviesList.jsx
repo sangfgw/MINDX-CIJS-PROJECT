@@ -1,153 +1,124 @@
-// Import Swiper React components
-import { Typography } from "@mui/material";
-import { Swiper, SwiperSlide } from "swiper/react";
+/* eslint-disable react/prop-types */
+import { useEffect, useReducer } from "react";
+import MoviesSwiper from "./MoviesSwiper";
+import { movieReducer } from "../../utils/movie-reducer";
+import { getMoviesByType } from "../../utils/API/movie-api";
 import { styled } from "@mui/system";
+import { Alert, Box, Typography } from "@mui/material";
 
-// import required modules
-import { Navigation } from "swiper/modules";
-
-// Images
-import super_mario_bros_image from "../../assets/images/super_mario_bros.jpg";
-import shazam_fury_of_gods_image from "../../assets/images/shazam_fury_of_the_gods.jpg";
-import evil_dead_rise_image from "../../assets/images/evil_dead_rise.jpg";
-import puss_in_boots from "../../assets/images/puss_in_boots.jpg";
-import john_wick_chapter_4_image from "../../assets/images/john_wick_chapter_4.jpg";
-import the_communion_girl_image from "../../assets/images/the_communion_girl.jpg";
-import sixty_five_image from "../../assets/images/65.jpg";
-import the_popes_exorcist_image from "../../assets/images/the_popes_exorcist.jpg";
-import super_cell_image from "../../assets/images/super_cell.jpg";
-import ghosted_image from "../../assets/images/ghosted.jpg";
-
-// Styled Component
 const StyledMovieListTitle = styled(Typography)(() => ({
   fontSize: "2rem" /* 32px */,
   color: "white",
   fontWeight: "bold",
   fontFamily: "serif",
+  marginBottom: "0.5rem" /* 8px */,
 }));
 
-const StyledMovieImage = styled("img")(() => ({
-  "&.movie-image": {
-    width: "100%",
-    height: "500px",
+const StyledMovieListContainer = styled(Box)(() => ({
+  "& ~ &": {
+    marginTop: "4rem" /* 64px */,
   },
 }));
 
-const StyledSwiper = styled(Swiper)(() => ({
-  userSelect: "none",
-}));
+const MoviesList = ({ type }) => {
+  const [state, dispatch] = useReducer(movieReducer);
 
-const MoviesList = () => {
+  // generate movies title handler
+  const generateMoviesTitleHandler = () => {
+    switch (type) {
+      case "now-playing":
+        return "Now Playing";
+      case "popular":
+        return "Popular";
+      case "top-rated":
+        return "Top Rated";
+      case "upcomming":
+        return "Upcoming";
+      default:
+        return "No Title...";
+    }
+  };
+
+  useEffect(() => {
+    const dispatchMoviesByType = () => {
+      const nowPlayingMoviesPromise = getMoviesByType("now-playing");
+      const popularMoviesPromise = getMoviesByType("popular");
+      const topRatedMoviesPromise = getMoviesByType("top-rated");
+      const upCommingMoviesPromise = getMoviesByType("upcomming");
+
+      switch (type) {
+        case "now-playing":
+          return nowPlayingMoviesPromise.then((moviesData) => {
+            if (moviesData)
+              dispatch({ type: "now-playing", payload: moviesData.results });
+          });
+        case "popular":
+          return popularMoviesPromise.then((moviesData) => {
+            if (moviesData)
+              dispatch({ type: "popular", payload: moviesData.results });
+          });
+        case "top-rated":
+          return topRatedMoviesPromise.then((moviesData) => {
+            if (moviesData)
+              dispatch({ type: "top-rated", payload: moviesData.results });
+          });
+        case "upcomming":
+          return upCommingMoviesPromise.then((moviesData) => {
+            if (moviesData)
+              dispatch({ type: "upcomming", payload: moviesData.results });
+          });
+        default:
+          return;
+      }
+    };
+
+    dispatchMoviesByType();
+  }, [type]);
+
+  const generateMoviesByType = () => {
+    if (!state) return;
+    switch (type) {
+      case "now-playing":
+        return state.nowPlaying;
+      case "popular":
+        return state.popular;
+      case "top-rated":
+        return state.topRated;
+      case "upcomming":
+        return state.upComming;
+      default:
+        return;
+    }
+  };
+
+  const isEmptyMovies = () => {
+    if (!state) return;
+    switch (type) {
+      case "now-playing":
+        return !state.nowPlaying.length > 0;
+      case "popular":
+        return !state.popular.length > 0;
+      case "top-rated":
+        return !state.topRated.length > 0;
+      case "upcomming":
+        return !state.upComming.length > 0;
+      default:
+        return;
+    }
+  };
+
   return (
-    <>
-      <StyledMovieListTitle>Now Playing</StyledMovieListTitle>
-      <StyledSwiper
-        slidesPerView={5}
-        spaceBetween={30}
-        navigation={true}
-        modules={[Navigation]}
-        breakpoints={{
-          0: {
-            slidesPerView: 1,
-          },
-          576: {
-            // width: 576px
-            slidesPerView: 2,
-          },
-          768: {
-            // width: 768px
-            slidesPerView: 3,
-          },
-          1000: {
-            slidesPerView: 4,
-          },
-          1200: {
-            slidesPerView: 5,
-          },
-        }}
-        className="swiper-movie-wrapper"
-      >
-        <SwiperSlide>
-          <StyledMovieImage
-            src={super_mario_bros_image}
-            alt="Movie Image"
-            className="movie-image"
-          />
-        </SwiperSlide>
-
-        <SwiperSlide>
-          <StyledMovieImage
-            src={shazam_fury_of_gods_image}
-            alt="Movie Image"
-            className="movie-image"
-          />
-        </SwiperSlide>
-
-        <SwiperSlide>
-          <StyledMovieImage
-            src={evil_dead_rise_image}
-            alt="Movie Image"
-            className="movie-image"
-          />
-        </SwiperSlide>
-
-        <SwiperSlide>
-          <StyledMovieImage
-            src={puss_in_boots}
-            alt="Movie Image"
-            className="movie-image"
-          />
-        </SwiperSlide>
-
-        <SwiperSlide>
-          <StyledMovieImage
-            src={john_wick_chapter_4_image}
-            alt="Movie Image"
-            className="movie-image"
-          />
-        </SwiperSlide>
-
-        <SwiperSlide>
-          <StyledMovieImage
-            src={the_communion_girl_image}
-            alt="Movie Image"
-            className="movie-image"
-          />
-        </SwiperSlide>
-
-        <SwiperSlide>
-          <StyledMovieImage
-            src={sixty_five_image}
-            alt="Movie Image"
-            className="movie-image"
-          />
-        </SwiperSlide>
-
-        <SwiperSlide>
-          <StyledMovieImage
-            src={the_popes_exorcist_image}
-            alt="Movie Image"
-            className="movie-image"
-          />
-        </SwiperSlide>
-
-        <SwiperSlide>
-          <StyledMovieImage
-            src={super_cell_image}
-            alt="Movie Image"
-            className="movie-image"
-          />
-        </SwiperSlide>
-
-        <SwiperSlide>
-          <StyledMovieImage
-            src={ghosted_image}
-            alt="Movie Image"
-            className="movie-image"
-          />
-        </SwiperSlide>
-      </StyledSwiper>
-    </>
+    <StyledMovieListContainer className="movies-list">
+      <StyledMovieListTitle>
+        {generateMoviesTitleHandler()}
+      </StyledMovieListTitle>
+      <MoviesSwiper movies={generateMoviesByType()} />
+      {isEmptyMovies() && (
+        <Alert severity="info">
+          No {generateMoviesTitleHandler()} Movies Found...
+        </Alert>
+      )}
+    </StyledMovieListContainer>
   );
 };
 

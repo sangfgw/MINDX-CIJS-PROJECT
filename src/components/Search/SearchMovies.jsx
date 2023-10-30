@@ -9,10 +9,10 @@ import {
 } from "@mui/material";
 import styled from "@emotion/styled";
 import { red } from "@mui/material/colors";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useCallback, useEffect, useReducer, useState } from "react";
 import { initializeMovieState, movieReducer } from "../../utils/movie-reducer";
-import { findMoviesByGenreId, getGenres } from "../../utils/API/movie-api";
+import { findMoviesBySearchParams, getGenres } from "../../utils/API/movie-api";
 
 // Styled Component
 const StyledCategoryTitle = styled(Typography)(() => ({
@@ -24,8 +24,7 @@ const StyledMovieImage = styled("img")(() => ({
 }));
 
 // Main Component
-const Category = () => {
-  const { moviesGenres } = useParams();
+const SearchMovies = () => {
   let [searchParams] = useSearchParams();
   const [state, dispatch] = useReducer(movieReducer, initializeMovieState);
 
@@ -38,6 +37,7 @@ const Category = () => {
   };
 
   useEffect(() => {
+    // console.log(searchParams.get("query"));
     // Open Backdrop
     handleOpen();
 
@@ -55,38 +55,48 @@ const Category = () => {
     }
 
     // Fetch And Dispatch Movies By Genre
-    if (state.genres.length > 0) {
-      // console.log(state.genres.find((genre) => genre.name === moviesGenres));
-      findMoviesByGenreId(
-        state.genres.find((genre) => genre.name === moviesGenres).id,
-        searchParams.get("page")
+    if (!state.moviesBySearch.length > 0) {
+      findMoviesBySearchParams(
+        searchParams.get("query") ?? "",
+        searchParams.get("page") ?? "1"
       ).then((moviesData) => {
         // console.log(moviesData);
-        dispatch({ type: "movies-by-genre", payload: moviesData });
+        dispatch({ type: "movies-by-search", payload: moviesData });
 
         // Close Backdrop
         handleClose();
       });
     }
-  }, [moviesGenres, state.genres, searchParams]);
+  }, [searchParams, state.genres.length]);
 
   // Loading Movies Handler
   const loadingMoviesHandler = useCallback(() => {
     // console.log(moviesGenres);
-    return state.moviesByGenre.results?.map((movie) => (
-      <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4} key={movie.id}>
-        <Link to={`/${moviesGenres}/${movie.id}`}>
-          <StyledMovieImage
-            src={
-              import.meta.env.VITE_API_ORIGINAL_IMAGE_ENDPOINT +
-              movie.poster_path
-            }
-            alt={movie.title + " " + "Poster Image"}
-          />
-        </Link>
-      </Grid>
-    ));
-  }, [state.moviesByGenre, moviesGenres]);
+    return state.moviesBySearch.results?.map((movie) => {
+      // console.log(movie);
+      return (
+        state.genres.find((genre) => genre.id === movie.genre_ids[0])?.name &&
+        movie.poster_path && (
+          <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4} key={movie.id}>
+            <Link
+              to={`/${
+                state.genres.find((genre) => genre.id === movie.genre_ids[0])
+                  ?.name
+              }/${movie.id}`}
+            >
+              <StyledMovieImage
+                src={
+                  import.meta.env.VITE_API_ORIGINAL_IMAGE_ENDPOINT +
+                  movie.poster_path
+                }
+                alt={movie.title + " " + "Poster Image"}
+              />
+            </Link>
+          </Grid>
+        )
+      );
+    });
+  }, [state.moviesBySearch]);
 
   return (
     <>
@@ -95,7 +105,7 @@ const Category = () => {
         variant="h4"
         sx={{ marginBottom: "1rem" /* 16px */ }}
       >
-        {moviesGenres}
+        Searching {searchParams.get("query")}
       </StyledCategoryTitle>
       <Grid container spacing={4}>
         <Backdrop
@@ -108,13 +118,13 @@ const Category = () => {
         {loadingMoviesHandler()}
       </Grid>
       <Pagination
-        count={state.moviesByGenre.total_pages}
+        count={state.moviesBySearch.total_pages}
         shape="rounded"
         color="primary"
         renderItem={(item) => (
           <PaginationItem
             component={Link}
-            to={`/category/${moviesGenres}?page=${item.page}`}
+            to={`/search?query=${searchParams.get("query")}&page=${item.page}`}
             // onClick={handleOpen}
             {...item}
           />
@@ -146,4 +156,4 @@ const Category = () => {
   );
 };
 
-export default Category;
+export default SearchMovies;

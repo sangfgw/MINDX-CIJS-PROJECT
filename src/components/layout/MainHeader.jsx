@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import * as React from "react";
 import PropTypes from "prop-types";
 import AppBar from "@mui/material/AppBar";
@@ -22,15 +23,28 @@ import {
 } from "@mui/material/styles";
 import SearchIcon from "@mui/icons-material/Search";
 import InputBase from "@mui/material/InputBase";
-import { Link } from "react-router-dom";
-import { Stack } from "@mui/material";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Grid, Stack } from "@mui/material";
+import { ClickAwayListener } from "@mui/base";
+import { red } from "@mui/material/colors";
+import Slide from "@mui/material/Slide";
+import { initializeMovieState, movieReducer } from "../../utils/movie-reducer";
+import { getGenres } from "../../utils/API/movie-api";
+import useDebounce from "../../hooks/useDebounce";
 
+// Initialize Variables
 const drawerWidth = 240;
 const navItems = [
-  { content: "Home", href: "/" },
-  { content: "Category", href: "/category" },
+  { content: "Home", href: "/", type: "link" },
+  {
+    content: "Category",
+    href: "/category",
+    type: "dropdown",
+    children: <p>Dropdown</p>,
+  },
 ];
 
+// Styled Component
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: theme.shape.borderRadius,
@@ -80,6 +94,27 @@ const StyledLink = styled(Link)(() => ({
   },
 }));
 
+const StyledDropdown = styled(Box)(() => ({
+  position: "absolute",
+  top: "100%",
+  left: 0,
+  right: 0,
+  padding: "1.5rem" /* 24px */,
+  backgroundColor: "black",
+  minHeight: "200px",
+  maxHeight: "calc(100vh - 56px)",
+  overflowY: "auto",
+}));
+
+const StyledDropDownLink = styled(Link)(() => ({
+  color: "whitesmoke",
+
+  ":hover": {
+    color: red[700],
+  },
+}));
+
+// MUI THEME
 const darkTheme = createTheme({
   palette: {
     mode: "dark",
@@ -89,8 +124,60 @@ const darkTheme = createTheme({
   },
 });
 
+// Main Component
 const MainHeader = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [searchValue, setSearchValue] = React.useState("");
+  const inputRef = React.useRef();
+  const searchDebouncedValue = useDebounce(searchValue, 1000);
+  const [state, dispatch] = React.useReducer(
+    movieReducer,
+    initializeMovieState
+  );
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [openDropDown, setOpenDropDown] = React.useState(false);
+
+  React.useEffect(() => {
+    if (searchDebouncedValue !== "") {
+      // console.log(searchDebouncedValue);
+      navigate(`/search?query=${searchDebouncedValue}`);
+    }
+  }, [searchDebouncedValue]);
+
+  React.useEffect(() => {
+    document.body.style.overflow = openDropDown ? "hidden" : "unset";
+  }, [openDropDown]);
+
+  React.useEffect(() => {
+    if (state.genres && state.genres.length > 0) return;
+    const genresPromise = getGenres();
+    genresPromise.then((genresData) =>
+      dispatch({ type: "genres", payload: genresData.genres })
+    );
+    // console.log("Called");
+  }, [state.genres]);
+
+  React.useEffect(() => {
+    if (!location.pathname.includes("/search")) {
+      setSearchValue("");
+      // console.log(location.pathname, inputRef.current.value);
+      inputRef.current.value = "";
+    }
+  }, [location.pathname]);
+
+  const updateSearchValueHandler = (e) => {
+    setSearchValue(e.target.value);
+    // console.log(e.target.value);
+  };
+
+  const handleOpenDropDown = () => {
+    setOpenDropDown(true);
+  };
+
+  const handleCloseDropDown = () => {
+    setOpenDropDown(false);
+  };
 
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
@@ -98,26 +185,68 @@ const MainHeader = () => {
 
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
-      <Typography variant="h6" sx={{ my: 2 }}>
+      <Typography
+        variant="h6"
+        sx={{ my: 2, fontWeight: "bold", color: red[500] }}
+      >
         MOVIE
       </Typography>
       <Divider />
       <List>
-        {navItems.map((item) => (
-          <StyledLink to={item.href} key={item.content}>
-            <ListItem disablePadding>
-              <ListItemButton sx={{ textAlign: "center" }}>
+        {navItems.map((item) =>
+          item.type.includes("dropdown") ? (
+            <ListItem disablePadding key={item.content}>
+              <ListItemButton
+                sx={{ textAlign: "center" }}
+                onClick={handleOpenDropDown}
+              >
                 <ListItemText primary={item.content} />
               </ListItemButton>
             </ListItem>
-          </StyledLink>
-        ))}
+          ) : (
+            <StyledLink to={item.href} key={item.content}>
+              <ListItem disablePadding>
+                <ListItemButton sx={{ textAlign: "center" }}>
+                  <ListItemText primary={item.content} />
+                </ListItemButton>
+              </ListItem>
+            </StyledLink>
+          )
+        )}
       </List>
     </Box>
   );
 
   // const container =
   //   window !== undefined ? () => window().document.body : undefined;
+
+  const loadDropDownLinks = () => {
+    return (
+      state.genres.length > 0 && (
+        <Grid container spacing={4}>
+          {state.genres.map((item) => (
+            <Grid item xs={12} sm={6} lg={4} key={item.id}>
+              <StyledDropDownLink
+                to={`/category/${item.name}`}
+                onClick={handleCloseDropDown}
+              >
+                <Typography display="inline-flex">{item.name}</Typography>
+              </StyledDropDownLink>
+            </Grid>
+          ))}
+        </Grid>
+      )
+    );
+  };
+
+  // Custom Component
+  const DropDownButton = ({ title }) => {
+    return (
+      <Button sx={{ color: "#fff" }} onClick={handleOpenDropDown}>
+        {title}
+      </Button>
+    );
+  };
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -138,7 +267,15 @@ const MainHeader = () => {
             <Typography
               variant="h6"
               component="div"
-              sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
+              sx={{
+                flexGrow: 1,
+                display: {
+                  xs: "none",
+                  sm: "block",
+                  color: red[600],
+                  fontWeight: "bold",
+                },
+              }}
             >
               MOVIE
             </Typography>
@@ -149,16 +286,31 @@ const MainHeader = () => {
               <StyledInputBase
                 placeholder="Search…"
                 inputProps={{ "aria-label": "search" }}
+                onChange={updateSearchValueHandler}
+                onLoad={updateSearchValueHandler}
+                inputRef={inputRef}
               />
             </Search>
             <Box sx={{ display: { xs: "none", sm: "block" } }}>
-              {navItems.map((item) => (
-                <StyledLink key={item.content} to={item.href}>
-                  <Button sx={{ color: "#fff" }}>{item.content}</Button>
-                </StyledLink>
-              ))}
+              {navItems.map((item) =>
+                item.type.includes("dropdown") ? (
+                  <DropDownButton title={item.content} key={item.content} />
+                ) : (
+                  <StyledLink key={item.content} to={item.href}>
+                    <Button sx={{ color: "#fff" }}>{item.content}</Button>
+                  </StyledLink>
+                )
+              )}
             </Box>
           </Toolbar>
+
+          <Slide direction="left" in={openDropDown} mountOnEnter unmountOnExit>
+            <Box>
+              <ClickAwayListener onClickAway={handleCloseDropDown}>
+                <StyledDropdown>{loadDropDownLinks()}</StyledDropdown>
+              </ClickAwayListener>
+            </Box>
+          </Slide>
         </AppBar>
       </ThemeProvider>
 

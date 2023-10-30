@@ -4,9 +4,9 @@ import { styled } from "@mui/system";
 
 const StyledEmbedWrapper = styled(Box)(() => ({
   width: "clamp(200px, 100%, 800px)",
-  minWidth: "400px",
+  minWidth: "200px",
   height: "450px",
-  marginInline: "1rem",
+  marginInline: "1.5rem",
 }));
 
 const YoutubeEmbed = ({ embedId }) => {
@@ -15,7 +15,7 @@ const YoutubeEmbed = ({ embedId }) => {
       <iframe
         width="100%"
         height="100%"
-        src={`https://www.youtube.com/embed/${embedId}?autoplay=1&loop=1&modestbranding=1&rel=0&controls=0&disablekb=1&playlist=${embedId}`}
+        src={`https://www.youtube.com/embed/${embedId}?autoplay=0&loop=1&modestbranding=1&rel=0&controls=0&disablekb=1&playlist=${embedId}`}
         title="YouTube video player"
         frameBorder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
