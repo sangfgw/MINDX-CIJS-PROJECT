@@ -11,7 +11,7 @@ const AppRoutes = () => {
   const router = createBrowserRouter(
     [
       {
-        path: "/",
+        path: import.meta.env.DEV ? "/" : "/MINDX-CIJS-PROJECT",
         element: <Root />,
         errorElement: <Error />,
         children: [
