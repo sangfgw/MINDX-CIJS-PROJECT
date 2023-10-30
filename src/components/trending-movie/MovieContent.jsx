@@ -12,6 +12,7 @@ const MovieContent = styled(Box)(({ theme }) => ({
   flexDirection: "column",
   justifyContent: "center",
   userSelect: "text",
+  marginBottom: "-1rem",
 
   // Breakpoints
   [theme.breakpoints.up("lg")]: {
