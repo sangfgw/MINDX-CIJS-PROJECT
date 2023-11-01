@@ -1,4 +1,4 @@
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { RouterProvider, createHashRouter } from "react-router-dom";
 import Root from "../components/layout/Root";
 import Home from "../components/home/Home";
 import Category from "../components/category/Category";
@@ -8,7 +8,7 @@ import NotFound from "../components/site-status/NotFound";
 import Error from "../components/site-status/Error";
 
 const AppRoutes = () => {
-  const router = createBrowserRouter(
+  const router = createHashRouter(
     [
       {
         path: "/",
