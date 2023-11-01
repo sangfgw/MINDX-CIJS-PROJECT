@@ -156,16 +156,16 @@ const TrendingMovieBanner = ({ movie }) => {
           <StyledTitleTrending>{movie.title}</StyledTitleTrending>
           <StyledDescTrending>{movie.overview}</StyledDescTrending>
 
-          <StyledWatchButton variant="contained" size="large">
-            <Link
-              to={`/${
-                state.genres.find((genre) => genre.id === movie.genre_ids[0])
-                  ?.name
-              }/${movie.id}`}
-            >
+          <Link
+            to={`/${
+              state.genres.find((genre) => genre.id === movie.genre_ids[0])
+                ?.name
+            }/${movie.id}`}
+          >
+            <StyledWatchButton variant="contained" size="large">
               Watch Now!
-            </Link>
-          </StyledWatchButton>
+            </StyledWatchButton>
+          </Link>
         </MovieContent>
         <VideoWrapper>
           <YoutubeEmbed

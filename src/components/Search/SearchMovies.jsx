@@ -25,7 +25,7 @@ const StyledMovieImage = styled("img")(() => ({
 
 // Main Component
 const SearchMovies = () => {
-  let [searchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [state, dispatch] = useReducer(movieReducer, initializeMovieState);
 
   const [open, setOpen] = useState(false);
@@ -51,7 +51,6 @@ const SearchMovies = () => {
         // Close Backdrop
         handleClose();
       });
-      return;
     }
 
     // Fetch And Dispatch Movies By Genre
