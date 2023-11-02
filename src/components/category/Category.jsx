@@ -10,9 +10,16 @@ import {
 import styled from "@emotion/styled";
 import { red } from "@mui/material/colors";
 import { Link, useParams, useSearchParams } from "react-router-dom";
-import { useCallback, useEffect, useReducer, useState } from "react";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useReducer,
+  useState,
+} from "react";
 import { initializeMovieState, movieReducer } from "../../utils/movie-reducer";
 import { findMoviesByGenreId, getGenres } from "../../utils/API/movie-api";
+import GenresContext from "../../contexts/GenresContext";
 
 // Styled Component
 const StyledCategoryTitle = styled(Typography)(() => ({
@@ -28,6 +35,7 @@ const Category = () => {
   const { moviesGenres } = useParams();
   let [searchParams] = useSearchParams();
   const [state, dispatch] = useReducer(movieReducer, initializeMovieState);
+  const genresContext = useContext(GenresContext);
 
   const [open, setOpen] = useState(false);
   const handleClose = () => {
@@ -42,7 +50,7 @@ const Category = () => {
     handleOpen();
 
     // Fetch And Dispatch Genres
-    if (!state.genres.length > 0) {
+    if (!genresContext || !genresContext.length > 0) {
       const genresPromise = getGenres();
       genresPromise.then((genresData) => {
         // console.log(genresData);
@@ -55,10 +63,10 @@ const Category = () => {
     }
 
     // Fetch And Dispatch Movies By Genre
-    if (state.genres.length > 0) {
+    if (genresContext.length > 0) {
       // console.log(state.genres.find((genre) => genre.name === moviesGenres));
       findMoviesByGenreId(
-        state.genres.find((genre) => genre.name === moviesGenres).id,
+        genresContext.find((genre) => genre.name === moviesGenres).id,
         searchParams.get("page")
       ).then((moviesData) => {
         // console.log(moviesData);
@@ -68,7 +76,7 @@ const Category = () => {
         handleClose();
       });
     }
-  }, [moviesGenres, state.genres, searchParams]);
+  }, [moviesGenres, genresContext, searchParams]);
 
   // Loading Movies Handler
   const loadingMoviesHandler = useCallback(() => {

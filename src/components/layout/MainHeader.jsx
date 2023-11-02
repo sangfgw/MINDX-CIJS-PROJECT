@@ -28,9 +28,8 @@ import { Grid, Stack } from "@mui/material";
 import { ClickAwayListener } from "@mui/base";
 import { red } from "@mui/material/colors";
 import Slide from "@mui/material/Slide";
-import { initializeMovieState, movieReducer } from "../../utils/movie-reducer";
-import { getGenres } from "../../utils/API/movie-api";
 import useDebounce from "../../hooks/useDebounce";
+import GenresContext from "../../contexts/GenresContext";
 
 // Initialize Variables
 const drawerWidth = 240;
@@ -141,17 +140,13 @@ const darkTheme = createTheme({
 });
 
 // Main Component
-const genresPromise = getGenres();
 const MainHeader = () => {
+  const genresContext = React.useContext(GenresContext);
   const navigate = useNavigate();
   const location = useLocation();
   const [searchValue, setSearchValue] = React.useState("");
   const inputRef = React.useRef();
   const searchDebouncedValue = useDebounce(searchValue, 1000);
-  const [state, dispatch] = React.useReducer(
-    movieReducer,
-    initializeMovieState
-  );
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [openDropDown, setOpenDropDown] = React.useState(false);
 
@@ -166,14 +161,14 @@ const MainHeader = () => {
     document.body.style.overflow = openDropDown ? "hidden" : "unset";
   }, [openDropDown]);
 
-  React.useEffect(() => {
-    if (state.genres && state.genres.length > 0) return;
-    // const genresPromise = getGenres();
-    genresPromise.then((genresData) =>
-      dispatch({ type: "genres", payload: genresData.genres })
-    );
-    // console.log("Called");
-  }, []);
+  // React.useEffect(() => {
+  //   if (state.genres && state.genres.length > 0) return;
+  //   // const genresPromise = getGenres();
+  //   genresPromise.then((genresData) =>
+  //     dispatch({ type: "genres", payload: genresData.genres })
+  //   );
+  //   // console.log("Called");
+  // }, []);
 
   React.useEffect(() => {
     if (!location.pathname.includes("/search")) {
@@ -239,9 +234,9 @@ const MainHeader = () => {
 
   const loadDropDownLinks = () => {
     return (
-      state.genres.length > 0 && (
+      genresContext.length > 0 && (
         <Grid container spacing={4}>
-          {state.genres.map((item) => (
+          {genresContext.map((item) => (
             <Grid item xs={12} sm={6} lg={4} key={item.id}>
               <StyledDropDownLink
                 to={`/category/${item.name}`}

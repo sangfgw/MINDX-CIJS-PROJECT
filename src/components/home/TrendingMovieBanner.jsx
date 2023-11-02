@@ -6,16 +6,13 @@ import YoutubeEmbed from "../video/YoutubeEmbed";
 import TrendingMovieWrapper from "../trending-movie/TrendingMovieWrapper";
 import MovieContent from "../trending-movie/MovieContent";
 import VideoWrapper from "../trending-movie/VideoWrapper";
-import { useEffect } from "react";
-import {
-  getGenres,
-  getMovieById,
-  getMovieVideoById,
-} from "../../utils/API/movie-api";
+import { useContext, useEffect } from "react";
+import { getMovieById, getMovieVideoById } from "../../utils/API/movie-api";
 import { useReducer } from "react";
 import { initializeMovieState, movieReducer } from "../../utils/movie-reducer";
 import { generateRandomTrailerVideoId } from "../../utils/generate/randomVideoId";
 import { Link } from "react-router-dom";
+import GenresContext from "../../contexts/GenresContext";
 
 // const TrendingMovieWrapper = styled(Box)(() => ({
 //   marginBottom: "1rem" /* 16px */,
@@ -89,19 +86,20 @@ const StyledWatchLink = styled(Link)(() => ({
 
 const TrendingMovieBanner = ({ movie }) => {
   const [state, dispatch] = useReducer(movieReducer, initializeMovieState);
+  const genresContext = useContext(GenresContext);
 
   useEffect(() => {
     // console.log(movie);
 
     if (movie && Object.keys(movie).length > 0) {
-      if (state.genres && !state.genres.length > 0) {
-        const genresPromise = getGenres();
+      // if (state.genres && !state.genres.length > 0) {
+      //   const genresPromise = getGenres();
 
-        genresPromise.then((genresData) =>
-          dispatch({ type: "genres", payload: genresData.genres })
-        );
-        return;
-      }
+      //   genresPromise.then((genresData) =>
+      //     dispatch({ type: "genres", payload: genresData.genres })
+      //   );
+      //   return;
+      // }
 
       const movieDetailsPromise = getMovieById(movie.id);
       const movieVideosPromise = getMovieVideoById(movie.id);
@@ -160,7 +158,7 @@ const TrendingMovieBanner = ({ movie }) => {
 
           <StyledWatchLink
             to={`/${
-              state.genres.find((genre) => genre.id === movie.genre_ids[0])
+              genresContext.find((genre) => genre.id === movie.genre_ids[0])
                 ?.name
             }/${movie.id}`}
           >

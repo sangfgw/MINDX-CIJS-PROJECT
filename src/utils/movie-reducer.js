@@ -13,7 +13,7 @@ export let initializeMovieState = {
 };
 
 export const movieReducer = (state = initializeMovieState, action) => {
-  initializeMovieState = { ...state };
+  // initializeMovieState = { ...state };
   switch (action.type) {
     case "now-playing":
       // Return State Update

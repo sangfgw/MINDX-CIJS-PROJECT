@@ -6,10 +6,9 @@ import { styled } from "@mui/system";
 // import required modules
 import { Navigation } from "swiper/modules";
 
-import { useEffect, useReducer } from "react";
+import { useContext } from "react";
 import { Link } from "react-router-dom";
-import { initializeMovieState, movieReducer } from "../../utils/movie-reducer";
-import { getGenres } from "../../utils/API/movie-api";
+import GenresContext from "../../contexts/GenresContext";
 
 // Styled Component
 const StyledMovieImage = styled("img")(() => ({
@@ -24,22 +23,28 @@ const StyledSwiper = styled(Swiper)(() => ({
 }));
 
 const MoviesSwiper = ({ movies }) => {
-  const [state, dispatch] = useReducer(movieReducer, initializeMovieState);
+  // const [state, dispatch] = useReducer(movieReducer, initializeMovieState);
 
-  useEffect(() => {
-    // console.log(title, movies);
-    if (state.genres && !state.genres.length > 0) {
-      const genresPromise = getGenres();
+  // useEffect(() => {
+  //   // console.log(title, movies);
+  //   if (state.genres && !state.genres.length > 0) {
+  //     const genresPromise = getGenres();
 
-      genresPromise.then((genresData) =>
-        dispatch({ type: "genres", payload: genresData.genres })
-      );
-      return;
-    }
-  }, []);
+  //     genresPromise.then((genresData) =>
+  //       dispatch({ type: "genres", payload: genresData.genres })
+  //     );
+  //     return;
+  //   }
+  // }, []);
+  const genresContext = useContext(GenresContext);
+
+  // useEffect(() => {
+  //   console.log(genresContext);
+  // }, [genresContext]);
 
   return (
-    movies && (
+    movies &&
+    genresContext && (
       <>
         <StyledSwiper
           slidesPerView={5}
@@ -72,7 +77,7 @@ const MoviesSwiper = ({ movies }) => {
               <SwiperSlide key={movie.id}>
                 <Link
                   to={`/${
-                    state.genres.find(
+                    genresContext.find(
                       (genre) => genre.id === movie.genre_ids[0]
                     )?.name
                   }/${movie.id}`}

@@ -10,9 +10,16 @@ import {
 import styled from "@emotion/styled";
 import { red } from "@mui/material/colors";
 import { Link, useSearchParams } from "react-router-dom";
-import { useCallback, useEffect, useReducer, useState } from "react";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useReducer,
+  useState,
+} from "react";
 import { initializeMovieState, movieReducer } from "../../utils/movie-reducer";
 import { findMoviesBySearchParams, getGenres } from "../../utils/API/movie-api";
+import GenresContext from "../../contexts/GenresContext";
 
 // Styled Component
 const StyledCategoryTitle = styled(Typography)(() => ({
@@ -27,6 +34,7 @@ const StyledMovieImage = styled("img")(() => ({
 const SearchMovies = () => {
   const [searchParams] = useSearchParams();
   const [state, dispatch] = useReducer(movieReducer, initializeMovieState);
+  const genresContext = useContext(GenresContext);
 
   const [open, setOpen] = useState(false);
   const handleClose = () => {
@@ -42,7 +50,7 @@ const SearchMovies = () => {
     handleOpen();
 
     // Fetch And Dispatch Genres
-    if (!state.genres.length > 0) {
+    if (!genresContext || !genresContext.length > 0) {
       const genresPromise = getGenres();
       genresPromise.then((genresData) => {
         // console.log(genresData);
@@ -66,7 +74,7 @@ const SearchMovies = () => {
         handleClose();
       });
     }
-  }, [searchParams, state.genres.length]);
+  }, [searchParams, genresContext]);
 
   // Loading Movies Handler
   const loadingMoviesHandler = useCallback(() => {
@@ -74,12 +82,12 @@ const SearchMovies = () => {
     return state.moviesBySearch.results?.map((movie) => {
       // console.log(movie);
       return (
-        state.genres.find((genre) => genre.id === movie.genre_ids[0])?.name &&
+        genresContext.find((genre) => genre.id === movie.genre_ids[0])?.name &&
         movie.poster_path && (
           <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4} key={movie.id}>
             <Link
               to={`/${
-                state.genres.find((genre) => genre.id === movie.genre_ids[0])
+                genresContext.find((genre) => genre.id === movie.genre_ids[0])
                   ?.name
               }/${movie.id}`}
             >
