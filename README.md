@@ -1,6 +1,6 @@
 # Visit My Movie Website
 - Github Pages (Recommended): https://sangfgw.github.io/MINDX-CIJS-PROJECT/
-- Netlify: https://654319f031857e0708fd5512--dancing-tulumba-0f785f.netlify.app/
+- Netlify: https://tranquil-zabaione-fe568c.netlify.app/
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
