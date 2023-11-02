@@ -41,29 +41,29 @@ const MoviesList = ({ type }) => {
 
   useEffect(() => {
     const dispatchMoviesByType = () => {
-      const nowPlayingMoviesPromise = getMoviesByType("now-playing");
-      const popularMoviesPromise = getMoviesByType("popular");
-      const topRatedMoviesPromise = getMoviesByType("top-rated");
-      const upCommingMoviesPromise = getMoviesByType("upcomming");
+      // const nowPlayingMoviesPromise = getMoviesByType("now-playing");
+      // const popularMoviesPromise = getMoviesByType("popular");
+      // const topRatedMoviesPromise = getMoviesByType("top-rated");
+      // const upCommingMoviesPromise = getMoviesByType("upcomming");
 
       switch (type) {
         case "now-playing":
-          return nowPlayingMoviesPromise.then((moviesData) => {
+          return getMoviesByType("now-playing").then((moviesData) => {
             if (moviesData)
               dispatch({ type: "now-playing", payload: moviesData.results });
           });
         case "popular":
-          return popularMoviesPromise.then((moviesData) => {
+          return getMoviesByType("popular").then((moviesData) => {
             if (moviesData)
               dispatch({ type: "popular", payload: moviesData.results });
           });
         case "top-rated":
-          return topRatedMoviesPromise.then((moviesData) => {
+          return getMoviesByType("top-rated").then((moviesData) => {
             if (moviesData)
               dispatch({ type: "top-rated", payload: moviesData.results });
           });
         case "upcomming":
-          return upCommingMoviesPromise.then((moviesData) => {
+          return getMoviesByType("upcomming").then((moviesData) => {
             if (moviesData)
               dispatch({ type: "upcomming", payload: moviesData.results });
           });
@@ -73,7 +73,7 @@ const MoviesList = ({ type }) => {
     };
 
     dispatchMoviesByType();
-  }, [type]);
+  }, []);
 
   const generateMoviesByType = () => {
     if (!state) return;

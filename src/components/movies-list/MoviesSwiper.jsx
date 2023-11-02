@@ -36,7 +36,7 @@ const MoviesSwiper = ({ movies }) => {
       );
       return;
     }
-  }, [movies]);
+  }, []);
 
   return (
     movies && (

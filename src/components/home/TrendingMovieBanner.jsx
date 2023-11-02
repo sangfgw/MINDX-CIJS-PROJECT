@@ -60,14 +60,17 @@ const StyledDescTrending = styled(Typography)(() => ({
 }));
 
 const StyledWatchButton = styled(Button)(() => ({
-  display: "block",
-  marginInline: "auto",
   color: "white",
   backgroundColor: red[500],
   "&:hover": {
     backgroundColor: red[700],
     color: "white",
   },
+}));
+
+const StyledWatchLink = styled(Link)(() => ({
+  display: "block",
+  marginInline: "auto",
 }));
 
 // const StyledVideoWrapper = styled(Box)(() => ({
@@ -91,7 +94,6 @@ const TrendingMovieBanner = ({ movie }) => {
     // console.log(movie);
 
     if (movie && Object.keys(movie).length > 0) {
-      // const genrePromise = findGenreById(movie.genre_ids[0]);
       if (state.genres && !state.genres.length > 0) {
         const genresPromise = getGenres();
 
@@ -156,7 +158,7 @@ const TrendingMovieBanner = ({ movie }) => {
           <StyledTitleTrending>{movie.title}</StyledTitleTrending>
           <StyledDescTrending>{movie.overview}</StyledDescTrending>
 
-          <Link
+          <StyledWatchLink
             to={`/${
               state.genres.find((genre) => genre.id === movie.genre_ids[0])
                 ?.name
@@ -165,7 +167,7 @@ const TrendingMovieBanner = ({ movie }) => {
             <StyledWatchButton variant="contained" size="large">
               Watch Now!
             </StyledWatchButton>
-          </Link>
+          </StyledWatchLink>
         </MovieContent>
         <VideoWrapper>
           <YoutubeEmbed

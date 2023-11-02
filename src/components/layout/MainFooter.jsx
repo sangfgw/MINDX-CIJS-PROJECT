@@ -1,5 +1,8 @@
-import { Box, List, ListItem, Stack, Typography } from "@mui/material";
+import { Box, List, ListItem, Stack, SvgIcon, Typography } from "@mui/material";
 import { styled } from "@mui/system";
+import FacebookIcon from "@mui/icons-material/Facebook";
+import TwitterIcon from "@mui/icons-material/Twitter";
+import InstagramIcon from "@mui/icons-material/Instagram";
 
 const StyledFooterWrapper = styled(Box)(() => ({
   background: "#111",
@@ -24,12 +27,23 @@ const AboutUs = () => (
   </Box>
 );
 
+const SOCIAL_ICONs = [
+  {
+    id: 1,
+    Icon: FacebookIcon,
+  },
+  { id: 2, Icon: TwitterIcon },
+  { id: 3, Icon: InstagramIcon },
+];
+
 const Socials = () => (
   <Box>
     <Typography variant="h4">Socials</Typography>
-    <Typography variant="subtitle2" fontWeight={400} mt="1rem">
-      ...
-    </Typography>
+    <Stack direction="row" gap="10px" mt="1rem">
+      {SOCIAL_ICONs.map((social) => (
+        <SvgIcon component={social.Icon} key={social.id} />
+      ))}
+    </Stack>
   </Box>
 );
 // -------

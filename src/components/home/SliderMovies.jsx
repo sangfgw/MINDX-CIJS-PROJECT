@@ -31,12 +31,15 @@ const SliderMovies = ({ updateMovie }) => {
   const [state, dispatch] = useReducer(movieReducer, initializeMovieState);
 
   useEffect(() => {
-    const nowPlayingMoviesPromise = getMoviesByType("now-playing");
-    nowPlayingMoviesPromise.then((moviesData) => {
-      // console.log(moviesData);
-      if (moviesData)
-        dispatch({ type: "now-playing", payload: moviesData.results });
-    });
+    if (state.nowPlaying && !state.nowPlaying.length > 0) {
+      const nowPlayingMoviesPromise = getMoviesByType("now-playing");
+      nowPlayingMoviesPromise.then((moviesData) => {
+        // console.log(moviesData);
+        if (moviesData)
+          dispatch({ type: "now-playing", payload: moviesData.results });
+      });
+    }
+    // console.log("Called")
   }, []);
 
   // useEffect(() => {

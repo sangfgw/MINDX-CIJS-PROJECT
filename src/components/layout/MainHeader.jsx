@@ -114,6 +114,22 @@ const StyledDropDownLink = styled(Link)(() => ({
   },
 }));
 
+const StyledNavButton = styled(Button)(() => ({
+  color: "rgb(255,255,255)",
+  ":hover": {
+    color: "rgba(255,255,255, 0.75)",
+    backgroundColor: "unset",
+  },
+}));
+
+const StyledSiteLogoLink = styled(Link)(() => ({
+  color: red[600],
+  fontWeight: "bold",
+  ":hover": {
+    color: red[800],
+  },
+}));
+
 // MUI THEME
 const darkTheme = createTheme({
   palette: {
@@ -125,6 +141,7 @@ const darkTheme = createTheme({
 });
 
 // Main Component
+const genresPromise = getGenres();
 const MainHeader = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -151,12 +168,12 @@ const MainHeader = () => {
 
   React.useEffect(() => {
     if (state.genres && state.genres.length > 0) return;
-    const genresPromise = getGenres();
+    // const genresPromise = getGenres();
     genresPromise.then((genresData) =>
       dispatch({ type: "genres", payload: genresData.genres })
     );
     // console.log("Called");
-  }, [state.genres]);
+  }, []);
 
   React.useEffect(() => {
     if (!location.pathname.includes("/search")) {
@@ -242,9 +259,7 @@ const MainHeader = () => {
   // Custom Component
   const DropDownButton = ({ title }) => {
     return (
-      <Button sx={{ color: "#fff" }} onClick={handleOpenDropDown}>
-        {title}
-      </Button>
+      <StyledNavButton onClick={handleOpenDropDown}>{title}</StyledNavButton>
     );
   };
 
@@ -272,12 +287,10 @@ const MainHeader = () => {
                 display: {
                   xs: "none",
                   sm: "block",
-                  color: red[600],
-                  fontWeight: "bold",
                 },
               }}
             >
-              MOVIE
+              <StyledSiteLogoLink to="/">MOVIE</StyledSiteLogoLink>
             </Typography>
             <Search sx={{ mr: { sm: "1rem" } }}>
               <SearchIconWrapper>
@@ -297,7 +310,7 @@ const MainHeader = () => {
                   <DropDownButton title={item.content} key={item.content} />
                 ) : (
                   <StyledLink key={item.content} to={item.href}>
-                    <Button sx={{ color: "#fff" }}>{item.content}</Button>
+                    <StyledNavButton>{item.content}</StyledNavButton>
                   </StyledLink>
                 )
               )}

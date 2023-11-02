@@ -2,7 +2,6 @@
 import { Box } from "@mui/material";
 import MainFooter from "./MainFooter";
 import MainHeader from "./MainHeader";
-
 const Layout = ({ children }) => {
   return (
     <>

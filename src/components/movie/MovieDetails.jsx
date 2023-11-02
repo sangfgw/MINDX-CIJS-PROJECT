@@ -1,20 +1,21 @@
 // MUI Import
 import {
+  Alert,
   Box,
   Breadcrumbs,
   Button,
   Chip,
   Grid,
+  Snackbar,
   Stack,
   Toolbar,
   Typography,
 } from "@mui/material";
 import { Link, useParams } from "react-router-dom";
 import { styled } from "@mui/system";
-import { red } from "@mui/material/colors";
+import { orange, red } from "@mui/material/colors";
 import TodayIcon from "@mui/icons-material/Today";
 import TimelapseIcon from "@mui/icons-material/Timelapse";
-
 // Components Import
 import TrendingMovieWrapper from "../trending-movie/TrendingMovieWrapper";
 import MovieContent from "../trending-movie/MovieContent";
@@ -22,8 +23,8 @@ import VideoWrapper from "../trending-movie/VideoWrapper";
 import YoutubeEmbed from "../video/YoutubeEmbed";
 
 // Images Import
-import { KeyboardArrowRight, PlayCircleOutline } from "@mui/icons-material";
-import { useEffect, useReducer } from "react";
+import { KeyboardArrowRight, WarningAmberOutlined } from "@mui/icons-material";
+import { useEffect, useReducer, useState } from "react";
 import {
   getMovieById,
   getMovieKeyWords,
@@ -87,9 +88,9 @@ const StyledWatchButton = styled(Button)(() => ({
   justifyContent: "center",
   marginInline: "auto",
   color: "white",
-  backgroundColor: red[500],
+  backgroundColor: orange[500],
   "&:hover": {
-    backgroundColor: red[700],
+    backgroundColor: orange[700],
     color: "white",
   },
 }));
@@ -191,6 +192,21 @@ const dateTimeFormatter = (datetimeRaw = "", type = "date") => {
 const MovieDetails = () => {
   const [state, dispatch] = useReducer(movieReducer, initializeMovieState);
   const { moviesGenres, movieId } = useParams();
+
+  const [open, setOpen] = useState(false);
+
+  const handleClick = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpen(false);
+  };
+
   useEffect(() => {
     if (!movieId && state.movieDetails?.length > 0) return;
 
@@ -309,9 +325,18 @@ const MovieDetails = () => {
                 />
               </Grid>
             ) : (
-              <Typography key={production_company.id}>
-                {production_company.name}
-              </Typography>
+              <Grid
+                item
+                xs={8}
+                sm={5}
+                md={3}
+                lg={2}
+                key={production_company.id}
+              >
+                <Typography key={production_company.id}>
+                  {production_company.name}
+                </Typography>
+              </Grid>
             )
           )}
         </Grid>
@@ -334,12 +359,19 @@ const MovieDetails = () => {
       content: (
         <Stack direction="row" flexWrap="wrap" gap="1rem">
           {state.movieDetailsKeyWords.keywords?.map((keyword) => (
-            <Chip
-              sx={{ color: "#7c7979" }}
-              variant="outlined"
-              key={keyword.id}
-              label={<Typography>{keyword.name}</Typography>}
-            />
+            <Link to={`/search?query=${keyword.name}`} key={keyword.id}>
+              <Chip
+                clickable
+                sx={{
+                  color: "#2b2a2a",
+                  background: "whitesmoke",
+                  borderRadius: "4px",
+                  ":hover": { backgroundColor: "rgba(255, 255, 255, 0.8)" },
+                }}
+                variant="filled"
+                label={<Typography>{keyword.name}</Typography>}
+              />
+            </Link>
           ))}
         </Stack>
       ),
@@ -351,8 +383,10 @@ const MovieDetails = () => {
       <Toolbar />
       <TrendingMovieWrapper
         imagesource={
-          import.meta.env.VITE_API_ORIGINAL_IMAGE_ENDPOINT +
           state.movieDetails.backdrop_path
+            ? import.meta.env.VITE_API_ORIGINAL_IMAGE_ENDPOINT +
+              state.movieDetails.backdrop_path
+            : ""
         }
       >
         <MovieContent>
@@ -406,10 +440,28 @@ const MovieDetails = () => {
           <StyledWatchButton
             variant="contained"
             size="large"
-            startIcon={<PlayCircleOutline />}
+            startIcon={<WarningAmberOutlined />}
+            onClick={handleClick}
           >
-            Play
+            Not Available
           </StyledWatchButton>
+          <Snackbar
+            open={open}
+            autoHideDuration={6000}
+            onClose={handleClose}
+            message="The Movie Is Not Available Now!"
+            // action={SnackBarAction}
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          >
+            <Alert
+              onClose={handleClose}
+              severity="warning"
+              sx={{ width: "100%" }}
+            >
+              The Movie <strong>{state.movieDetails.title}</strong> Is Not
+              Available Right Now!
+            </Alert>
+          </Snackbar>
         </MovieContent>
         <VideoWrapper>
           <YoutubeEmbed
