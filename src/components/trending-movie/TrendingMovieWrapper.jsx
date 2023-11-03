@@ -9,6 +9,8 @@ const TrendingMovieWrapper = styled(Box)(({ imagesource }) => ({
   backgroundImage: `url('${imagesource}')`,
   backgroundRepeat: "no-repeat",
   backgroundSize: "cover",
+  backgroundPosition: "center center",
+  backgroundAttachment: "fixed",
   userSelect: "none",
   display: "flex",
   flexWrap: "wrap",

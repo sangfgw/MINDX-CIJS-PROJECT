@@ -45,6 +45,13 @@ const StyledTitleTrending = styled(Typography)(() => ({
   lineHeight: 1.2,
 }));
 
+const StyledDescTrending = styled(Typography)(() => ({
+  fontSize: "1rem",
+  color: "white",
+  filter: "drop-shadow(0 0 0.75rem black)",
+  marginBottom: "2rem",
+}));
+
 const StyledMovieDescWrapper = styled(Stack)(() => ({
   flexDirection: "row",
   justifyContent: "center",
@@ -73,13 +80,6 @@ const StyledChip = styled(Chip)(() => ({
 
 const StyledRatingIcon = styled(Typography)(() => ({
   fontSize: "0.75rem" /* 12px */,
-}));
-
-const StyledDescTrending = styled(Typography)(() => ({
-  fontSize: "1rem",
-  color: "white",
-  filter: "drop-shadow(0 0 0.75rem black)",
-  marginBottom: "2rem",
 }));
 
 const StyledWatchButton = styled(Button)(() => ({

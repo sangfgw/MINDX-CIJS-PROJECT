@@ -47,6 +47,11 @@ const StyledTitleTrending = styled(Typography)(() => ({
   textAlign: "center",
   fontFamily: "serif",
   lineHeight: 1.2,
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  display: "-webkit-box",
+  WebkitLineClamp: "3",
+  WebkitBoxOrient: "vertical",
 }));
 
 const StyledDescTrending = styled(Typography)(() => ({
@@ -54,6 +59,11 @@ const StyledDescTrending = styled(Typography)(() => ({
   color: "white",
   filter: "drop-shadow(0 0 0.75rem black)",
   marginBottom: "2rem",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  display: "-webkit-box",
+  WebkitLineClamp: "6",
+  WebkitBoxOrient: "vertical",
 }));
 
 const StyledWatchButton = styled(Button)(() => ({
