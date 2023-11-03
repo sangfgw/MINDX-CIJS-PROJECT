@@ -28,6 +28,7 @@ const StyledCategoryTitle = styled(Typography)(() => ({
 
 const StyledMovieImage = styled("img")(() => ({
   width: "100%",
+  height: "100%",
 }));
 
 // Main Component
