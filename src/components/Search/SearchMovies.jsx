@@ -18,7 +18,7 @@ import {
   useState,
 } from "react";
 import { initializeMovieState, movieReducer } from "../../utils/movie-reducer";
-import { findMoviesBySearchParams, getGenres } from "../../utils/API/movie-api";
+import { findMoviesBySearchParams } from "../../utils/API/movie-api";
 import GenresContext from "../../contexts/GenresContext";
 
 // Styled Component
@@ -51,16 +51,16 @@ const SearchMovies = () => {
     handleOpen();
 
     // Fetch And Dispatch Genres
-    if (!genresContext || !genresContext.length > 0) {
-      const genresPromise = getGenres();
-      genresPromise.then((genresData) => {
-        // console.log(genresData);
-        dispatch({ type: "genres", payload: genresData.genres });
+    // if (!genresContext || !genresContext.length > 0) {
+    //   const genresPromise = getGenres();
+    //   genresPromise.then((genresData) => {
+    //     // console.log(genresData);
+    //     dispatch({ type: "genres", payload: genresData.genres });
 
-        // Close Backdrop
-        handleClose();
-      });
-    }
+    //     // Close Backdrop
+    //     handleClose();
+    //   });
+    // }
 
     // Fetch And Dispatch Movies By Genre
     if (!state.moviesBySearch.length > 0) {
@@ -106,25 +106,8 @@ const SearchMovies = () => {
     });
   }, [state.moviesBySearch]);
 
-  return (
-    <>
-      <Toolbar />
-      <StyledCategoryTitle
-        variant="h4"
-        sx={{ marginBottom: "1rem" /* 16px */ }}
-      >
-        Searching {searchParams.get("query")}
-      </StyledCategoryTitle>
-      <Grid container spacing={4}>
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={open}
-          onClick={handleClose}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-        {loadingMoviesHandler()}
-      </Grid>
+  const loadingPagination = () =>
+    state.moviesBySearch.total_pages && (
       <Pagination
         count={state.moviesBySearch.total_pages}
         shape="rounded"
@@ -160,6 +143,28 @@ const SearchMovies = () => {
           },
         }}
       />
+    );
+
+  return (
+    <>
+      <Toolbar />
+      <StyledCategoryTitle
+        variant="h4"
+        sx={{ marginBottom: "1rem" /* 16px */ }}
+      >
+        Searching {searchParams.get("query")}
+      </StyledCategoryTitle>
+      <Grid container spacing={4}>
+        <Backdrop
+          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={open}
+          // onClick={handleClose}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
+        {loadingMoviesHandler()}
+      </Grid>
+      {loadingPagination()}
     </>
   );
 };
